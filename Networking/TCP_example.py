@@ -19,5 +19,21 @@ except socket.gaierror:
 
 print("IP address of " + host + "is " + remote_ip)
 s.connect((remote_ip, port))
-print("socket connected to host")
+print("socket connected to host: " + host + " it's ip address is: "+ remote_ip)
 
+
+# try to send a message using GET method
+message = "GET / HTTP/1.1\r\n\n\n"
+
+try:
+    s.sendall(message.encode())
+except socket.error:
+    print("unable to send request to google")
+    sys.exit()
+print("message has been send")
+# get the reply back from the host and it need it to
+reply = s.recv(4096)
+
+# using the decode function it will print in a more readable format for the replay message
+print(reply.decode())
+s.close()
