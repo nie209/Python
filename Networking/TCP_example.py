@@ -13,7 +13,7 @@ host = "www.google.ca"
 port = 80
 try:
     # gethostbyname it will do a look up and return the IP address of the host
-    remote_ip  = socket.gethostbyname(host)
+    remote_ip = socket.gethostbyname(host)
 except socket.gaierror:
     print("no IP address found for the host ")
 
