@@ -1,5 +1,6 @@
 import socket
 import sys
+from _thread import *
 
 
 def create_socket_connection(host, port):
@@ -17,38 +18,39 @@ def create_socket_connection(host, port):
         print("fail to bind the socket to the host")
         sys.exit()
 
-    print("sockte has been bounded")
+    print("socket has been bounded")
     return s
+
+
+def client_thread(connection):
+    welcome_message = "Welcome to the server.\n"
+    connection.send(welcome_message.encode())
+    while True:
+        data = connection.recv(1024)
+        replay = "OK. " + data.decode()
+        print(replay)
+        if not data:
+            break
+        connection.sendall(data)
+    connection.close()
 
 
 def listen_for_incoming_message(bind_socket):
     # allowing the socket handle up to 10 people
     bind_socket.listen(10)
     print("socket is ready ")
-    connection, address = bind_socket.accept()
-    print("connected with " + address[0] + ": " + str(address[1]))
+    while True:
+        connection, address = bind_socket.accept()
+        print("connected with " + address[0] + ": " + str(address[1]))
+        start_new_thread(client_thread, (connection, ))
     receive_data(connection)
     return connection
-
-
-def receive_data(connection):
-    while True:
-        data = connection.recv(1024)
-        print("OK " + data.decode())
-        if not data:
-            break
-
-        # this line cause double printing on the client side
-        connection.sendall(data)
 
 
 if __name__ == "__main__":
     s = create_socket_connection("", 8888)
     conn = listen_for_incoming_message(s)
     s.close()
-
-
-
 
 
 
